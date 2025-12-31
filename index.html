@@ -13,6 +13,8 @@ body{
   font-family:'Poppins',sans-serif;
   background:radial-gradient(circle at top,#0f172a,#020617);
   overflow:hidden;
+  min-height:100vh;
+  min-height:-webkit-fill-available;
 }
 
 /* ================= FIREWORKS ================= */
@@ -166,7 +168,7 @@ canvas{
 .carousel{
   display:flex;
   width:100%;
-  height:100vh;
+  min-height:100dvh;
   transition:transform .8s cubic-bezier(.4,0,.2,1);
 }
 .slide{
@@ -404,7 +406,6 @@ footer.show{
   </div></section>
 </div>
 
-
 <div class="controls">
   <button onclick="prev()">‹</button>
   <button onclick="next()">›</button>
@@ -497,5 +498,6 @@ addEventListener('click',e=>{
   e.clientX<innerWidth/2?prev():next();
 });
 </script>
+
 </body>
 </html>
