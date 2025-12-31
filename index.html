@@ -15,6 +15,13 @@ body{
   overflow:hidden;
 }
 
+/* ================= FIREWORKS CANVAS ================= */
+canvas{
+  position:fixed;
+  inset:0;
+  z-index:0;
+}
+
 /* ================= INTRO ENVELOPE ================= */
 #intro{
   position:fixed;
@@ -58,7 +65,7 @@ body{
 }
 .envelope.open .flap{transform:rotateX(180deg)}
 
-/* ================= RIBBON STRAP ================= */
+/* ================= RIBBON ================= */
 .ribbon-h,.ribbon-v{
   position:absolute;
   background:#b08a4f;
@@ -88,13 +95,10 @@ body{
   z-index:6;
   animation:knotIdle 3.5s ease-in-out infinite;
 }
-
 @keyframes knotIdle{
   0%,100%{transform:translate(-50%,-50%) rotate(0deg)}
   50%{transform:translate(-50%,-50%) rotate(3deg)}
 }
-
-/* loops */
 .knot .loop{
   position:absolute;
   width:34px;
@@ -103,16 +107,8 @@ body{
   border-radius:10px 10px 16px 16px;
   top:8px;
 }
-.knot .loop.left{
-  left:0;
-  transform:rotate(-12deg);
-}
-.knot .loop.right{
-  right:0;
-  transform:rotate(12deg);
-}
-
-/* center tie */
+.knot .loop.left{left:0;transform:rotate(-12deg)}
+.knot .loop.right{right:0;transform:rotate(12deg)}
 .knot .center{
   position:absolute;
   width:16px;
@@ -122,10 +118,7 @@ body{
   top:13px;
   left:50%;
   transform:translateX(-50%);
-  box-shadow:0 0 0 2px rgba(0,0,0,.15) inset;
 }
-
-/* ribbon tails */
 .knot .tail{
   position:absolute;
   width:14px;
@@ -133,16 +126,8 @@ body{
   background:#7a4f26;
   bottom:-20px;
 }
-.knot .tail.left{
-  left:20px;
-  transform:rotate(8deg);
-}
-.knot .tail.right{
-  right:20px;
-  transform:rotate(-8deg);
-}
-
-/* knot fly away */
+.knot .tail.left{left:20px;transform:rotate(8deg)}
+.knot .tail.right{right:20px;transform:rotate(-8deg)}
 .envelope.open .knot{
   animation:none;
   transition:transform 1s ease, opacity .8s ease;
@@ -171,6 +156,8 @@ body{
   opacity:0;
   pointer-events:none;
   transition:opacity 1s ease;
+  position:relative;
+  z-index:2;
 }
 #app.show{
   opacity:1;
@@ -211,6 +198,10 @@ p{
   color:#333;
   line-height:1.9;
   font-size:1rem;
+}
+.signature{
+  margin-top:28px;
+  font-style:italic;
 }
 
 /* ================= CONTROLS ================= */
@@ -269,13 +260,12 @@ footer.show{
   opacity:.6;
   transform:translateY(0);
 }
-.signature{
-  margin-top:28px;
-  font-style:italic;
-}
 </style>
 </head>
 <body>
+
+<!-- FIREWORKS -->
+<canvas id="fireworks"></canvas>
 
 <!-- ENVELOPE -->
 <div id="intro">
@@ -283,7 +273,6 @@ footer.show{
     <div class="back"></div>
     <div class="ribbon-h"></div>
     <div class="ribbon-v"></div>
-
     <div class="knot">
       <span class="loop left"></span>
       <span class="loop right"></span>
@@ -291,7 +280,6 @@ footer.show{
       <span class="tail left"></span>
       <span class="tail right"></span>
     </div>
-
     <div class="letter-preview"></div>
     <div class="flap"></div>
     <div class="front"></div>
@@ -424,6 +412,7 @@ footer.show{
 </div>
 
 <script>
+/* ENVELOPE */
 const envelope=document.getElementById('envelope');
 const intro=document.getElementById('intro');
 const app=document.getElementById('app');
@@ -438,40 +427,82 @@ envelope.onclick=()=>{
   },1400);
 };
 
-/* CAROUSEL */
-const carousel=document.getElementById('carousel');
-const slides=document.querySelectorAll('.slide');
-const dotsWrap=document.getElementById('dots');
-let index=0;
+/* ================= FIREWORKS ================= */
+const canvas=document.getElementById('fireworks');
+const ctx=canvas.getContext('2d');
+resize();
+addEventListener('resize',resize);
 
-slides.forEach((_,i)=>{
-  const d=document.createElement('span');
-  d.onclick=()=>{index=i;update();}
-  dotsWrap.appendChild(d);
-});
-update();
-
-function update(){
-  carousel.style.transform=`translateX(-${index*100}vw)`;
-  [...dotsWrap.children].forEach((d,i)=>d.classList.toggle('active',i===index));
+function resize(){
+  canvas.width=innerWidth;
+  canvas.height=innerHeight;
 }
-function next(){index=(index+1)%slides.length;update();}
-function prev(){index=(index-1+slides.length)%slides.length;update();}
 
-/* SWIPE */
-let startX=0;
-addEventListener('touchstart',e=>startX=e.touches[0].clientX);
-addEventListener('touchend',e=>{
-  let diff=startX-e.changedTouches[0].clientX;
-  if(diff>60)next();
-  if(diff<-60)prev();
-});
+class Particle{
+  constructor(x,y,color){
+    this.x=x;this.y=y;
+    this.vx=(Math.random()-0.5)*7;
+    this.vy=(Math.random()-0.5)*7;
+    this.life=80;
+    this.color=color;
+  }
+  draw(){
+    ctx.fillStyle=this.color;
+    ctx.fillRect(this.x,this.y,2,2);
+    this.x+=this.vx;
+    this.y+=this.vy;
+    this.vy+=0.04;
+    this.life--;
+  }
+}
 
-/* TAP */
-addEventListener('click',e=>{
-  if(e.target.closest('.controls')||e.target.closest('.dots')||e.target.closest('#intro'))return;
-  e.clientX < innerWidth/2 ? prev() : next();
-});
+class Firework{
+  constructor(){
+    this.x=Math.random()*canvas.width;
+    this.y=canvas.height;
+    this.targetY=Math.random()*canvas.height*0.5+50;
+    this.color=`hsl(${Math.random()*360},100%,70%)`;
+    this.exploded=false;
+  }
+  draw(){
+    if(!this.exploded){
+      ctx.strokeStyle=this.color;
+      ctx.beginPath();
+      ctx.moveTo(this.x,this.y);
+      ctx.lineTo(this.x,this.y-18);
+      ctx.stroke();
+      this.y-=10;
+      if(this.y<=this.targetY){
+        this.exploded=true;
+        for(let i=0;i<80;i++){
+          particles.push(new Particle(this.x,this.y,this.color));
+        }
+      }
+    }
+  }
+}
+
+const fireworks=[];
+const particles=[];
+
+function animate(){
+  ctx.fillStyle='rgba(2,6,23,.25)';
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  if(Math.random()<0.05)fireworks.push(new Firework());
+
+  fireworks.forEach((f,i)=>{
+    f.draw();
+    if(f.exploded)fireworks.splice(i,1);
+  });
+  particles.forEach((p,i)=>{
+    p.draw();
+    if(p.life<=0)particles.splice(i,1);
+  });
+
+  requestAnimationFrame(animate);
+}
+animate();
 </script>
 
 </body>
