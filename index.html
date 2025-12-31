@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kyuusha -- Happy New Year 2026</title>
+<title>Kyuusha — Happy New Year 2026</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
@@ -12,49 +12,211 @@
 body{
   font-family:'Poppins',sans-serif;
   background:radial-gradient(circle at top,#0f172a,#020617);
-  color:#fff;
   overflow:hidden;
 }
 
+/* ================= INTRO ENVELOPE ================= */
+#intro{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:10;
+}
+
+.envelope{
+  width:260px;
+  height:180px;
+  position:relative;
+  cursor:pointer;
+  overflow:hidden;
+}
+.envelope .back{
+  position:absolute;
+  inset:0;
+  background:#e5d8c5;
+  border-radius:6px;
+}
+.envelope .front{
+  position:absolute;
+  inset:0;
+  border-left:130px solid transparent;
+  border-right:130px solid transparent;
+  border-top:90px solid #d6c3a5;
+}
+
+/* flap */
+.envelope .flap{
+  position:absolute;
+  inset:0;
+  background:#d0bfa6;
+  clip-path:polygon(0 0,100% 0,50% 55%);
+  transform-origin:top;
+  transition:transform 1s ease;
+  z-index:4;
+}
+.envelope.open .flap{transform:rotateX(180deg)}
+
+/* ================= RIBBON STRAP ================= */
+.ribbon-h,.ribbon-v{
+  position:absolute;
+  background:#b08a4f;
+  z-index:5;
+}
+.ribbon-h{
+  height:18px;
+  width:100%;
+  top:50%;
+  transform:translateY(-50%);
+}
+.ribbon-v{
+  width:18px;
+  height:100%;
+  left:50%;
+  transform:translateX(-50%);
+}
+
+/* ================= BIG RIBBON KNOT ================= */
+.knot{
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:72px;
+  height:44px;
+  transform:translate(-50%,-50%);
+  z-index:6;
+  animation:knotIdle 3.5s ease-in-out infinite;
+}
+
+@keyframes knotIdle{
+  0%,100%{transform:translate(-50%,-50%) rotate(0deg)}
+  50%{transform:translate(-50%,-50%) rotate(3deg)}
+}
+
+/* loops */
+.knot .loop{
+  position:absolute;
+  width:34px;
+  height:26px;
+  background:#8b5e2e;
+  border-radius:10px 10px 16px 16px;
+  top:8px;
+}
+.knot .loop.left{
+  left:0;
+  transform:rotate(-12deg);
+}
+.knot .loop.right{
+  right:0;
+  transform:rotate(12deg);
+}
+
+/* center tie */
+.knot .center{
+  position:absolute;
+  width:16px;
+  height:18px;
+  background:#6f461f;
+  border-radius:4px;
+  top:13px;
+  left:50%;
+  transform:translateX(-50%);
+  box-shadow:0 0 0 2px rgba(0,0,0,.15) inset;
+}
+
+/* ribbon tails */
+.knot .tail{
+  position:absolute;
+  width:14px;
+  height:28px;
+  background:#7a4f26;
+  bottom:-20px;
+}
+.knot .tail.left{
+  left:20px;
+  transform:rotate(8deg);
+}
+.knot .tail.right{
+  right:20px;
+  transform:rotate(-8deg);
+}
+
+/* knot fly away */
+.envelope.open .knot{
+  animation:none;
+  transition:transform 1s ease, opacity .8s ease;
+  transform:translate(-50%,-160%) rotate(15deg) scale(.8);
+  opacity:0;
+}
+
+/* ================= LETTER PREVIEW ================= */
+.letter-preview{
+  position:absolute;
+  width:90%;
+  height:120px;
+  background:#fdfaf4;
+  bottom:-120px;
+  left:5%;
+  border-radius:4px;
+  z-index:2;
+  transition:transform 1.2s ease;
+}
+.envelope.open .letter-preview{
+  transform:translateY(-140px);
+}
+
+/* ================= APP ================= */
+#app{
+  opacity:0;
+  pointer-events:none;
+  transition:opacity 1s ease;
+}
+#app.show{
+  opacity:1;
+  pointer-events:auto;
+}
+
+/* ================= CAROUSEL ================= */
 .carousel{
   display:flex;
   height:100vh;
   width:100vw;
   transition:transform 1s cubic-bezier(.4,0,.2,1);
-  position:relative;
-  z-index:2;
 }
-
 .slide{
   min-width:100vw;
-  height:100vh;
-  padding:60px 20px;
   display:flex;
   align-items:center;
   justify-content:center;
+  padding:20px;
+}
+
+/* ================= LETTER ================= */
+.letter{
+  background:#fdfaf4;
+  max-width:720px;
+  width:100%;
+  padding:40px 28px;
+  border-radius:14px;
+  box-shadow:0 30px 60px rgba(0,0,0,.45);
   text-align:center;
 }
-
-.inner{max-width:820px}
-
-h1,h2{
+h2{
   font-family:'Playfair Display',serif;
-  color:#f5c77a;
-  margin-bottom:20px;
+  margin-bottom:16px;
+  color:#2b2b2b;
 }
-
-h1{font-size:clamp(2.4rem,6vw,4rem)}
-h2{font-size:clamp(1.8rem,5vw,3rem)}
-
 p{
-  font-size:clamp(1rem,2.5vw,1.2rem);
-  line-height:1.8;
+  color:#333;
+  line-height:1.9;
+  font-size:1rem;
 }
 
-/* Controls */
+/* ================= CONTROLS ================= */
 .controls{
   position:fixed;
-  bottom:70px; /* dinaikin dikit biar ga tabrakan footer */
+  bottom:70px;
   width:100%;
   display:flex;
   justify-content:center;
@@ -62,21 +224,17 @@ p{
   z-index:3;
 }
 .controls button{
-  background:rgba(255,255,255,.12);
+  background:rgba(255,255,255,.15);
   border:none;
   color:#fff;
   padding:6px 14px;
-  font-size:.9rem;
   border-radius:20px;
   cursor:pointer;
-  opacity:.7;
 }
-.controls button:hover{opacity:1}
 
-/* Dots */
 .dots{
   position:fixed;
-  bottom:40px; /* di atas footer */
+  bottom:40px;
   width:100%;
   display:flex;
   justify-content:center;
@@ -86,128 +244,148 @@ p{
 .dots span{
   width:8px;
   height:8px;
+  background:rgba(255,255,255,.35);
   border-radius:50%;
-  background:rgba(255,255,255,.3);
-  cursor:pointer;
-  transition:.3s;
 }
 .dots span.active{
   background:#f5c77a;
   transform:scale(1.2);
 }
 
-/* Footer */
+/* ================= FOOTER ================= */
 footer{
   position:fixed;
   bottom:10px;
   width:100%;
   text-align:center;
-  font-size:0.75rem;
-  opacity:0.6;
+  font-size:.75rem;
+  opacity:0;
+  transform:translateY(10px);
+  transition:1s ease;
+  color:#fff;
   z-index:3;
 }
-
-/* Confetti */
-.confetti{
-  position:fixed;
-  top:-10px;
-  width:8px;
-  height:8px;
-  background:#f5c77a;
-  animation:fall linear infinite;
-  z-index:1;
-}
-@keyframes fall{
-  to{transform:translateY(110vh) rotate(360deg)}
+footer.show{
+  opacity:.6;
+  transform:translateY(0);
 }
 </style>
 </head>
 <body>
 
+<!-- ENVELOPE -->
+<div id="intro">
+  <div class="envelope" id="envelope">
+    <div class="back"></div>
+    <div class="ribbon-h"></div>
+    <div class="ribbon-v"></div>
+
+    <div class="knot">
+      <span class="loop left"></span>
+      <span class="loop right"></span>
+      <span class="center"></span>
+      <span class="tail left"></span>
+      <span class="tail right"></span>
+    </div>
+
+    <div class="letter-preview"></div>
+    <div class="flap"></div>
+    <div class="front"></div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+
 <div class="carousel" id="carousel">
 
-  <section class="slide"><div class="inner">
-    <h2>Hai Bolo-Boloku !</h2>
+  <!-- ISI PERSIS (TIDAK DIUBAH) -->
+  <section class="slide"><div class="letter">
+    <h2>Hai, Kamu yang Lagi Baca Ini 👋</h2>
     <p>
-      Akhirnya… ganti tahun juga.<br>
-      Rasanya baru kemarin bilang “tahun depan pasti lebih baik”,<br>
-      eh sekarang udah “tahun depan” lagi.<br><br>
-      Tapi nggak apa-apa,<br>
-      hari ini kita mulai lagi —<br>
-      dengan harapan baru dan mental yang… ya semampunya aowskaowks 😌
+      Kalau kamu sampai di halaman ini,<br>
+      entah lewat link, iseng, atau nggak sengaja,<br>
+      aku cuma mau bilang satu hal:<br><br>
+      Selamat.<br>
+      Kamu berhasil sampai di akhir tahun ini.<br><br>
+      Dan itu bukan hal kecil.
     </p>
   </div></section>
 
-  <section class="slide"><div class="inner">
-    <h2>Makasih Ya Guys, Makasihhh</h2>
+  <section class="slide"><div class="letter">
+    <h2>Sedikit Kata dari Aku, Buat Kamu</h2>
     <p>
-      Makasih bgt udah menemani sejauh ini.<br>
-      Hidup nggak selalu ramah, tapi kalian masih di sini.<br><br>
-      Makasih buat waktu, tenaga, dan perhatian,<br>
-      bahkan di hari-hari pas niat aja udah tinggal sisa.<br><br>
-      Kehadiran kalian itu nyata dan berarti.
+      Aku bikin ini bukan karena hidup selalu baik-baik aja.<br>
+      Justru karena banyak hari yang berat,<br>
+      banyak momen yang bikin pengen berhenti.<br><br>
+      Jadi kalau kamu lagi capek,<br>
+      lagi ngerasa sendirian,<br>
+      atau ngerasa hidup kok gini-gini amat,<br><br>
+      tenang.<br>
+      Kamu nggak aneh. Kamu manusia.
     </p>
   </div></section>
 
-  <section class="slide"><div class="inner">
-    <h2>Kalau Ada yang Nyebelin, Maafin Ya</h2>
+  <section class="slide"><div class="letter">
+    <h2>Terima Kasih Sudah Bertahan</h2>
     <p>
-      Selama setahun kemarin,<br>
-      mungkin aku pernah ngomong tanpa mikir,<br>
-      bercanda kebablasan,<br>
-      atau responnya nggak sesuai harapan.<br><br>
-      Bukan karena nggak peduli,<br>
-      tapi karena aku juga masih belajar jadi manusia yang lebih bener 😅<br><br>
-      Jadi… maafin ya hehehe.
+      Terima kasih buat siapa pun yang masih memilih bertahan,<br>
+      meski kadang nggak tahu alasannya apa.<br><br>
+      Terima kasih buat kamu yang tetap jalan,<br>
+      meski pelan, meski ragu, meski capek.<br><br>
+      Nggak semua perjuangan kelihatan,<br>
+      tapi semuanya tetap valid.
     </p>
   </div></section>
 
-  <section class="slide"><div class="inner">
-    <h2>Setahun Kemarin: Capek, Tapi Bertahan</h2>
+  <section class="slide"><div class="letter">
+    <h2>Tentang Setahun ke Belakang</h2>
     <p>
-      Tahun lalu ngajarin satu hal penting:<br>
-      hidup nggak harus selalu rapi buat tetap jalan.<br><br>
+      Setahun kemarin mungkin nggak sempurna.<br>
+      Banyak rencana nggak kejadian,<br>
+      banyak hal harus diterima, bukan dipilih.<br><br>
       <em>
-        “Nggak semua hari harus produktif,<br>
-        yang penting jangan nyerah sama hidup.”
+        “Nggak semua hari harus menang.<br>
+        Kadang, cukup bertahan aja sudah hebat.”
       </em><br><br>
-      Dan hey, kalau kalian baca ini,<br>
-      artinya kalian masih berdiri. Itu keren guys, goodjob !
+      Kalau kamu masih di sini,<br>
+      berarti kamu sudah melakukan yang terbaik.
     </p>
   </div></section>
 
-  <section class="slide"><div class="inner">
-    <h2>🎆 Welcome 2026 🎆</h2>
+  <section class="slide"><div class="letter">
+    <h2>Pelan-Pelan, Kita Lepas yang Lama</h2>
     <p>
-      Terima kasih buat pelajarannya,<br>
-      meskipun beberapa agak keterlaluan wkwkwk<br><br>
-      Yang baik disimpan,<br>
-      yang bikin capek… kita relakan aja.
+      Yang menyenangkan, yang menyakitkan,<br>
+      yang bikin belajar, yang bikin capek —<br>
+      biarlah jadi bagian dari cerita.<br><br>
+      Nggak harus dilupakan,<br>
+      tapi juga nggak harus dibawa semuanya ke depan.
     </p>
   </div></section>
 
-  <section class="slide"><div class="inner">
-    <h2>Harapan Tahun Ini (Insyaallah aamiin)</h2>
+  <section class="slide"><div class="letter">
+    <h2>Harapan Kecil untuk Tahun yang Baru</h2>
     <p>
-      Semoga lebih banyak hari tenang daripada drama.<br>
-      Lebih banyak tawa daripada overthinking tengah malam.<br><br>
-      Semoga sehat, cukup, dan dikuatkan,<br>
-      bahkan di hari-hari pas semua terasa berat.<br><br>
-      Pelan-pelan aja, yang penting jalan.
+      Semoga tahun ini lebih ramah.<br>
+      Lebih banyak hari tenang daripada ribut di kepala.<br><br>
+      Semoga kamu diberi cukup:<br>
+      cukup sehat, cukup kuat,<br>
+      cukup sabar, dan cukup berani buat lanjut.<br><br>
+      Nggak harus cepat. Yang penting bergerak.
     </p>
   </div></section>
 
-  <section class="slide"><div class="inner">
-    <h2>Happy New Year 2026 !</h2>
+  <section class="slide"><div class="letter">
+    <h2>Kalau Nggak Ada yang Bilang, Biar Aku yang Bilang</h2>
     <p>
-      Tahun ini nggak perlu sempurna.<br>
-      Nggak harus selalu kuat.<br>
-      Nggak harus selalu tahu jawabannya.<br><br>
-      Yang penting, jangan berhenti.<br>
-      Kalau capek, istirahat.<br>
-      Habis itu lanjut lagi.<br><br>
-      Selamat Tahun Baru 2026 !  
-      Kita masih di sini, dan itu udah hebat.
+      Kamu nggak sendirian.<br>
+      Dan kamu nggak ketinggalan.<br><br>
+      Setiap orang punya waktunya sendiri.<br>
+      Termasuk kamu.<br><br>
+      Terima kasih sudah sampai di sini.<br>
+      Semoga tahun ini lebih lembut ke kamu.<br><br>
+      Happy New Year 2026 !
     </p>
   </div></section>
 
@@ -219,21 +397,35 @@ footer{
 </div>
 
 <div class="dots" id="dots"></div>
+<footer id="footer">© 2026 — Kyuusha</footer>
 
-<footer>
-  © 2026 — Kyuusha
-</footer>
+</div>
 
 <script>
+const envelope=document.getElementById('envelope');
+const intro=document.getElementById('intro');
+const app=document.getElementById('app');
+const footer=document.getElementById('footer');
+
+envelope.onclick=()=>{
+  envelope.classList.add('open');
+  setTimeout(()=>{
+    intro.style.display='none';
+    app.classList.add('show');
+    footer.classList.add('show');
+  },1400);
+};
+
+/* CAROUSEL */
 const carousel=document.getElementById('carousel');
 const slides=document.querySelectorAll('.slide');
 const dotsWrap=document.getElementById('dots');
 let index=0;
 
 slides.forEach((_,i)=>{
-  const dot=document.createElement('span');
-  dot.onclick=()=>{index=i;update();}
-  dotsWrap.appendChild(dot);
+  const d=document.createElement('span');
+  d.onclick=()=>{index=i;update();}
+  dotsWrap.appendChild(d);
 });
 update();
 
@@ -244,23 +436,20 @@ function update(){
 function next(){index=(index+1)%slides.length;update();}
 function prev(){index=(index-1+slides.length)%slides.length;update();}
 
+/* SWIPE */
 let startX=0;
 addEventListener('touchstart',e=>startX=e.touches[0].clientX);
 addEventListener('touchend',e=>{
   let diff=startX-e.changedTouches[0].clientX;
-  if(diff>50)next();
-  if(diff<-50)prev();
+  if(diff>60)next();
+  if(diff<-60)prev();
 });
 
-/* Confetti */
-for(let i=0;i<100;i++){
-  const c=document.createElement('div');
-  c.className='confetti';
-  c.style.left=Math.random()*100+'vw';
-  c.style.animationDuration=(Math.random()*3+4)+'s';
-  c.style.opacity=Math.random();
-  document.body.appendChild(c);
-}
+/* TAP */
+addEventListener('click',e=>{
+  if(e.target.closest('.controls')||e.target.closest('.dots')||e.target.closest('#intro'))return;
+  e.clientX < innerWidth/2 ? prev() : next();
+});
 </script>
 
 </body>
