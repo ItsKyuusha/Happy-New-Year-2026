@@ -266,37 +266,6 @@ footer.show{
   transform:translateY(0);
 }
 
-/* ================= ANDROID FIX ================= */
-@media screen and (hover: none) and (pointer: coarse) {
-
-  /* Carousel height fix */
-  .carousel{
-    min-height: 100vh;
-    min-height: 100dvh;
-    height: 100%;
-  }
-
-  /* Slide must stretch */
-  .slide{
-    min-height: 100%;
-    align-items: flex-start;
-  }
-
-  /* Letter scroll fix */
-  .letter{
-    max-height: calc(100dvh - 180px);
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Canvas viewport sync */
-  canvas{
-    height: 100dvh;
-    width: 100vw;
-  }
-
-}
-
 </style>
 </head>
 <body>
